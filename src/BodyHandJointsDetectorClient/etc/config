@@ -1,5 +1,6 @@
-# Endpoints for implemented interfaces
-BodyHandJointsDetector.Endpoints=tcp -p 12345
+# Proxies for required interfaces
+BodyHandJointsDetectorProxy = BodyHandJointsDetector:tcp -h localhost -p 12345
+CameraSimpleProxy = camerasimple:tcp -h localhost -p 10005
 
 
 

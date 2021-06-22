@@ -21,6 +21,7 @@ import sys, os, traceback, time
 
 from PySide import QtGui, QtCore
 from genericworker import *
+import numpy as np
 
 import torch
 from .inference.PytorchInference import HandPoseDetector
@@ -57,6 +58,7 @@ class SpecificWorker(GenericWorker):
 	#
 	# getSkeleton
 	#
-	def getBodyAndHand(self, batch_images):
-		body_skeleton, hand_skeleton = self.estimator(batch_images)
+	def getBodyAndHand(self, image, shape):
+		image = np.reshape(image, shape)
+		body_skeleton, hand_skeleton = self.estimator(image)
 		return [body_skeleton, hand_skeleton]
