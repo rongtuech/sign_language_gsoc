@@ -107,18 +107,18 @@ if __name__ == '__main__':
 
 	# Remote object connection for PoseEstimation
 	try:
-		proxyString = ic.getProperties().getProperty('BodyHandJointsDetectorProxy')
+		proxyString = ic.getProperties().getProperty('ImageBasedGestureRecognitionProxy')
 		try:
 			basePrx = ic.stringToProxy(proxyString)
-			poseestimation_proxy = BodyHandJointsDetectorPrx.checkedCast(basePrx)
-			mprx["BodyHandJointsDetectorProxy"] = poseestimation_proxy
+			image_based_gesture_recognition_proxy = ImageBasedGestureRecognitionPrx.checkedCast(basePrx)
+			mprx["ImageBasedGestureRecognitionProxy"] = image_based_gesture_recognition_proxy
 		except Ice.Exception:
-			print('Cannot connect to the remote object (BodyHandJointsDetectorProxy)', proxyString)
+			print('Cannot connect to the remote object (ImageBasedGestureRecognition)', proxyString)
 			#traceback.print_exc()
 			status = 1
 	except Ice.Exception as e:
 		print(e)
-		print('Cannot get BodyHandJointsDetectorProxy property.')
+		print('Cannot get ImageBasedGestureRecognition property.')
 		status = 1
 
 

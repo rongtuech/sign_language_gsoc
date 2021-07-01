@@ -15,52 +15,69 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
-#
 
-import sys, os, Ice
+import sys, Ice, os
+from PySide import QtGui, QtCore
 
 ROBOCOMP = ''
 try:
 	ROBOCOMP = os.environ['ROBOCOMP']
-except:
+except KeyError:
 	print '$ROBOCOMP environment variable not set, using the default value /opt/robocomp'
 	ROBOCOMP = '/opt/robocomp'
-if len(ROBOCOMP)<1:
-	print 'ROBOCOMP environment variable not set! Exiting.'
-	sys.exit()
+
+preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ --all /opt/robocomp/interfaces/"
+Ice.loadSlice(preStr+"CommonBehavior.ice")
+import RoboCompCommonBehavior
 
 additionalPathStr = ''
-icePaths = []
+icePaths = [ '/opt/robocomp/interfaces' ]
 try:
-	icePaths.append('/opt/robocomp/interfaces')
 	SLICE_PATH = os.environ['SLICE_PATH'].split(':')
 	for p in SLICE_PATH:
 		icePaths.append(p)
 		additionalPathStr += ' -I' + p + ' '
+	icePaths.append('/opt/robocomp/interfaces')
 except:
-	print 'SLICE_PATH environment variable was not exported. Using only the default paths'
+	print('SLICE_PATH environment variable was not exported. Using only the default paths')
 	pass
 
 ice_BodyHandJointsDetector = False
 for p in icePaths:
-	print 'Trying', p, 'to load PoseEstimation.ice'
-	if os.path.isfile(p+'/BodyHandJointsDetector.ice'):
-		print 'Using', p, 'to load BodyHandJointsDetector.ice'
+	if os.path.isfile(p+'/ImageBasedGestureRecognition.ice'):
 		preStr = "-I/opt/robocomp/interfaces/ -I"+ROBOCOMP+"/interfaces/ " + additionalPathStr + " --all "+p+'/'
-		wholeStr = preStr+"BodyHandJointsDetector.ice"
+		wholeStr = preStr+"ImageBasedGestureRecognition.ice"
 		Ice.loadSlice(wholeStr)
 		ice_BodyHandJointsDetector = True
 		break
 if not ice_BodyHandJointsDetector:
-	print 'Couldn\'t load BodyHandJointsDetector'
+	print('Couln\'t load ImageBasedGestureRecognition')
 	sys.exit(-1)
 
-from RoboCompBodyHandJointsDetector import *
+
+# from RoboCompPoseEstimation import *
+# from poseestimationI import *
 
 
-class BodyHandJointsDetectorI(BodyHandJointsDetector):
-	def __init__(self, worker):
-		self.worker = worker
+class GenericWorker(QtCore.QObject):
+	kill = QtCore.Signal()
 
-	def getBodyAndHand(self, img, shape):
-		return self.worker.getSkeleton(img, shape)
+	def __init__(self, mprx):
+		super(GenericWorker, self).__init__()
+		self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
+		self.Period = 30
+		self.timer = QtCore.QTimer(self)
+
+
+	@QtCore.Slot()
+	def killYourSelf(self):
+		rDebug("Killing myself")
+		self.kill.emit()
+
+	# \brief Change compute period
+	# @param per Period in ms
+	@QtCore.Slot(int)
+	def setPeriod(self, p):
+		print "Period changed", p
+		Period = p
+		timer.start(Period)

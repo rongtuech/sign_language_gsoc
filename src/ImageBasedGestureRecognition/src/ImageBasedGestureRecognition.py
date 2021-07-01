@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# \mainpage RoboComp::activityRecognitionClient
+# \mainpage RoboComp::poseEstimation
 #
 # \section intro_sec Introduction
 #
@@ -48,14 +48,14 @@
 #
 # \subsection execution_ssec Execution
 #
-# Just: "${PATH_TO_BINARY}/activityRecognitionClient --Ice.Config=${PATH_TO_CONFIG_FILE}"
+# Just: "${PATH_TO_BINARY}/poseEstimation --Ice.Config=${PATH_TO_CONFIG_FILE}"
 #
 # \subsection running_ssec Once running
 #
 #
 #
 
-import sys, traceback, IceStorm, subprocess, threading, time, queue, os, copy
+import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 
 # Ctrl+c handling
 import signal
@@ -76,14 +76,14 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 		try:
 			return self.handler.timeAwake()
 		except:
-			print('Problem getting timeAwake')
+			print 'Problem getting timeAwake'
 	def killYourSelf(self, current = None):
 		self.handler.killYourSelf()
 	def getAttrList(self, current = None):
 		try:
 			return self.handler.getAttrList()
 		except:
-			print('Problem getting getAttrList')
+			print 'Problem getting getAttrList'
 			traceback.print_exc()
 			status = 1
 			return
@@ -104,43 +104,13 @@ if __name__ == '__main__':
 	parameters = {}
 	for i in ic.getProperties():
 		parameters[str(i)] = str(ic.getProperties().getProperty(i))
-
-	# Remote object connection for PoseEstimation
-	try:
-		proxyString = ic.getProperties().getProperty('BodyHandJointsDetectorProxy')
-		try:
-			basePrx = ic.stringToProxy(proxyString)
-			poseestimation_proxy = BodyHandJointsDetectorPrx.checkedCast(basePrx)
-			mprx["BodyHandJointsDetectorProxy"] = poseestimation_proxy
-		except Ice.Exception:
-			print('Cannot connect to the remote object (BodyHandJointsDetectorProxy)', proxyString)
-			#traceback.print_exc()
-			status = 1
-	except Ice.Exception as e:
-		print(e)
-		print('Cannot get BodyHandJointsDetectorProxy property.')
-		status = 1
-
-
-	# Remote object connection for CameraSimple
-	try:
-		proxyString = ic.getProperties().getProperty('CameraSimpleProxy')
-		try:
-			basePrx = ic.stringToProxy(proxyString)
-			camerasimple_proxy = CameraSimplePrx.checkedCast(basePrx)
-			mprx["CameraSimpleProxy"] = camerasimple_proxy
-		except Ice.Exception:
-			print('Cannot connect to the remote object (CameraSimple)', proxyString)
-			#traceback.print_exc()
-			status = 1
-	except Ice.Exception as e:
-		print(e)
-		print('Cannot get CameraSimpleProxy property.')
-		status = 1
-
 	if status == 0:
 		worker = SpecificWorker(mprx)
 		worker.setParams(parameters)
+
+	adapter = ic.createObjectAdapter('ImageBasedGestureRecognition')
+	adapter.add(ImageBasedGestureRecognitionI(worker), ic.stringToIdentity('ImageBasedGestureRecognitionI'))
+	adapter.activate()
 
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app.exec_()

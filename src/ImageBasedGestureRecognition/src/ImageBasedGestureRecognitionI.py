@@ -55,12 +55,12 @@ if not ice_BodyHandJointsDetector:
 	print 'Couldn\'t load BodyHandJointsDetector'
 	sys.exit(-1)
 
-from RoboCompBodyHandJointsDetector import *
+from RoboCompImageBasedGestureRecognition import *
 
 
-class BodyHandJointsDetectorI(BodyHandJointsDetector):
+class ImageBasedGestureRecognitionI(ImageBasedGestureRecognition):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def getBodyAndHand(self, img, shape):
-		return self.worker.getSkeleton(img, shape)
+	def getGesture(self, img, shape):
+		return self.worker.getGesture(img, shape)
