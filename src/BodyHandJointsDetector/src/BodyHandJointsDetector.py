@@ -60,8 +60,8 @@ import sys, traceback, IceStorm, subprocess, threading, time, Queue, os, copy
 # Ctrl+c handling
 import signal
 
-from PySide import QtGui, QtCore
-
+from PySide2 import QtGui, QtCore
+from .BodyHandJointsDetectorI import *
 from specificworker import *
 
 
@@ -76,14 +76,14 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 		try:
 			return self.handler.timeAwake()
 		except:
-			print 'Problem getting timeAwake'
+			print('Problem getting timeAwake')
 	def killYourSelf(self, current = None):
 		self.handler.killYourSelf()
 	def getAttrList(self, current = None):
 		try:
 			return self.handler.getAttrList()
 		except:
-			print 'Problem getting getAttrList'
+			print('Problem getting getAttrList')
 			traceback.print_exc()
 			status = 1
 			return

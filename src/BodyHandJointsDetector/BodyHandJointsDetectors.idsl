@@ -1,0 +1,34 @@
+model RoboCompBodyHandJointsDetectors
+{
+    sequence<byte> ImgType;
+
+    struct TImage {
+        int width;
+        int height;
+        int depth;
+        ImgType image;
+    }
+
+    sequence<int> Point;
+    sequence<Point> CoordSequence;
+
+    struct Hand {
+        int whichHand;
+        float score;
+        CoordSequence keyPoints;
+    }
+
+    struct Body {
+        float score;
+        CoordSequence keyPoints;
+    }
+
+    struct FullBody {
+        Body body;
+        sequence<Hand> hands;
+    }
+
+    interface BodyHandJointsDetectors {
+        sequence<FullBody> getBodyAndHand(TImage image);
+    }
+}

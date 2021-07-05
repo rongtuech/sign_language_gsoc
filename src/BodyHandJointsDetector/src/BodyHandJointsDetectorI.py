@@ -62,5 +62,5 @@ class BodyHandJointsDetectorI(BodyHandJointsDetector):
 	def __init__(self, worker):
 		self.worker = worker
 
-	def getBodyAndHand(self, img, shape):
-		return self.worker.getSkeleton(img, shape)
+	def getBodyAndHand(self, img):
+		return self.worker.getSkeleton(img)

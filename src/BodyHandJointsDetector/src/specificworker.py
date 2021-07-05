@@ -19,7 +19,7 @@
 
 import sys, os, traceback, time
 
-from PySide import QtGui, QtCore
+from PySide2 import QtGui, QtCore
 from genericworker import *
 import numpy as np
 
@@ -42,8 +42,8 @@ class SpecificWorker(GenericWorker):
 		self.weight = ""
 
 		# select inference model: pure pytorch, onnx, tensorrt
-		self.estimator = HandPoseDetector(self.weight)
-		# self.estimator = BodyDetectorONNXInference(self.weight)
+		# self.estimator = HandPoseDetector(self.weight)
+		self.estimator = BodyDetectorONNXInference(self.weight)
 		# self.estimator = BodyDetectorONNXTensorRTInference(self.weight)
 
 	def setParams(self, params):
