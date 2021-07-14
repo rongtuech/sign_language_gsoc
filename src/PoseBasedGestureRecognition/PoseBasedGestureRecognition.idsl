@@ -1,0 +1,22 @@
+module RoboCompPoseBasedGestureRecognition
+{
+    sequence<byte> NumPyData;
+
+    struct Pose {
+        int batchSize;
+        int numFrame;
+        NumPyData image;
+    };
+
+    sequence<float> floatList;
+    sequence<int> intList;
+
+    struct GestureResult {
+        floatList gestureProb;
+        intList gestureIndex;
+    };
+
+    interface PoseBasedGestureRecognition {
+        GestureResult getBodyAndHand(Pose input);
+    };
+};
